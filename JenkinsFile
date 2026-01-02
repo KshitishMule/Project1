@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                git branch:'main', url: 'https://github.com/KshitishMule/Project1.git'
+                git branch: 'main', url: 'https://github.com/KshitishMule/Project1.git'
             }
         }
 
@@ -24,6 +24,16 @@ pipeline {
             steps {
                 echo 'Deploying the application'
             }
+        }
+    }
+
+    post {
+        success {
+            bat 'echo "Build successful"'
+        }
+
+        failure {
+            bat 'echo "Build failed"'
         }
     }
 }
