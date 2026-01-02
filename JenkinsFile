@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        IMAGE_NAME = 'kshitishmule/project1'
+    }
+
     stages {
 
         stage('Checkout Code') {
@@ -12,22 +16,29 @@ pipeline {
 
         stage('Docker Check') {
             steps {
-                bat 'docker --version'
+                sh 'docker --version'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                bat 'docker build -t kshitish/project1:latest .'
+                sh 'docker build -t $IMAGE_NAME:latest .'
             }
         }
 
         stage('Push to DockerHub') {
             steps {
-                withCredentials([string(credentialsId: 'dockerhub-password', variable: 'DOCKER_PASS')]) {
-                    bat '''
-                    docker login -u kshitish -p %DOCKER_PASS%
-                    docker push kshitish/project1:latest
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'Kshitish',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )
+                ]) {
+                    sh '''
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker push $IMAGE_NAME:latest
+                        docker logout
                     '''
                 }
             }
@@ -35,11 +46,11 @@ pipeline {
     }
 
     post {
+        success {
+            echo 'Docker image built and pushed successfully'
+        }
         failure {
             echo 'Pipeline failed'
-        }
-        success {
-            echo 'Pipeline succeeded'
         }
     }
 }
