@@ -1,40 +1,9 @@
 pipeline {
     agent any
-
-    environment {
-        IMAGE_NAME = 'kshitishmule/project1'
-    }
-
     stages {
-
-        stage('Checkout') {
+        stage('Docker Check') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/KshitishMule/Project1.git'
-            }
-        }
-
-        stage('Build Docker image') {
-            steps {
-                sh 'docker build -t $IMAGE_NAME:latest .'
-            }
-        }
-
-        stage('Push to Dockerhub') {
-            steps {
-                withCredentials([
-                    usernamePassword(
-                        credentialsId: 'Dheeraj',
-                        usernameVariable: 'DOCKER_USER',
-                        passwordVariable: 'DOCKER_PASS'
-                    )
-                ]) {
-                    sh '''
-                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker push $IMAGE_NAME:latest
-                        docker logout
-                    '''
-                }
+                sh 'docker --version'
             }
         }
     }
