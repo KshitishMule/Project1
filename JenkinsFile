@@ -16,13 +16,13 @@ pipeline {
 
         stage('Docker Check') {
             steps {
-                sh 'docker --version'
+                bat 'docker --version'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t $IMAGE_NAME:latest .'
+                bat 'docker build -t $IMAGE_NAME:latest .'
             }
         }
 
@@ -30,12 +30,12 @@ pipeline {
             steps {
                 withCredentials([
                     usernamePassword(
-                        credentialsId: 'Kshitish',
+                        credentialsId: 'Dheeraj',
                         usernameVariable: 'DOCKER_USER',
                         passwordVariable: 'DOCKER_PASS'
                     )
                 ]) {
-                    sh '''
+                    bat '''
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
                         docker push $IMAGE_NAME:latest
                         docker logout
